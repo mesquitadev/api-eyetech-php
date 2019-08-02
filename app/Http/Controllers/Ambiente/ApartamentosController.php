@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Ambiente;
 
+use App\Http\Controllers\ApiMessages;
 use App\Http\Requests\ApartamentoRequest;
 use App\Http\Resources\ApartamentoCollection;
 use App\Http\Resources\ApartamentoResource;
@@ -45,7 +46,8 @@ class ApartamentosController extends Controller
                 'data' => $apartamento
             ], 201);
         } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 400);
+            $message = new ApiMessages($e->getMessage());
+            return response()->json($message->getMessage(), 400);
         }
     }
 
@@ -64,7 +66,8 @@ class ApartamentosController extends Controller
                 'data' => 'Apartamento cadastrado com sucesso!'
             ], 201);
         } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 401);
+            $message = new ApiMessages($e->getMessage());
+            return response()->json($message->getMessage(), 400);
         }
     }
 
@@ -89,7 +92,8 @@ class ApartamentosController extends Controller
             ], 201);
 
         } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 401);
+            $message = new ApiMessages($e->getMessage());
+            return response()->json($message->getMessage(), 400);
         }
     }
 
@@ -109,7 +113,8 @@ class ApartamentosController extends Controller
             ], 201);
 
         } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 401);
+            $message = new ApiMessages($e->getMessage());
+            return response()->json($message->getMessage(), 400);
         }
     }
 }

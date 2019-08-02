@@ -2,29 +2,52 @@
 
 namespace App\Http\Controllers\Ambiente;
 
+use App\Http\Controllers\ApiMessages;
+use App\Http\Requests\CameraRequest;
+use App\Http\Resources\CameraCollection;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Models\Camera;
+use Psy\Util\Json;
 
 class CamerasController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
+    private $camera;
+
+    public function __construct(Camera $camera)
     {
-        //
+        return $this->camera = $camera;
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return CameraCollection
      */
-    public function create()
+    public function index()
     {
-        //
+        $cameras = $this->camera->all();
+//        return response()->json($apartamentos);
+        return new CameraCollection($cameras);
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     * @return Json Camera
+     */
+    public function show($id)
+    {
+        try{
+            $camera = $this->camera->findOrFail($id);
+            return response()->json([
+                'data' => $camera
+            ], 201);
+        } catch (\Exception $e) {
+            $message = new ApiMessages($e->getMessage());
+            return response()->json($message->getMessage(), 400);
+        }
     }
 
     /**
@@ -33,32 +56,22 @@ class CamerasController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(CameraRequest $request)
     {
-        //
+        $data = $request->all();
+        try {
+            $camera = $this->camera->create($data);
+            return response()->json([
+                'data' => 'Camera cadastrada com sucesso!'
+            ], 201);
+        } catch (\Exception $e) {
+            $message = new ApiMessages($e->getMessage());
+            return response()->json($message->getMessage(), 400);
+        }
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
+
 
     /**
      * Update the specified resource in storage.
@@ -69,7 +82,18 @@ class CamerasController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $data = $request->all();
+        try{
+            $camera = $this->camera->findOrFail($id);
+            $camera->update($data);
+            return response()->json([
+                'data' => 'Câmera atualizada com sucesso!'
+            ], 201);
+
+        } catch (\Exception $e) {
+            $message = new ApiMessages($e->getMessage());
+            return response()->json($message->getMessage(), 400);
+        }
     }
 
     /**
@@ -80,6 +104,16 @@ class CamerasController extends Controller
      */
     public function destroy($id)
     {
-        //
+        try{
+            $camera = $this->camera->findOrFail($id);
+            $camera->delete();
+            return response()->json([
+                'data' => 'Camera removida com sucesso!'
+            ], 201);
+
+        } catch (\Exception $e) {
+            $message = new ApiMessages($e->getMessage());
+            return response()->json($message->getMessage(), 400);
+        }
     }
 }
