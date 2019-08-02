@@ -15,6 +15,16 @@ class CreateCamerasTable extends Migration
     {
         Schema::create('cameras', function (Blueprint $table) {
             $table->bigIncrements('id');
+            $table->string('nome');
+            $table->string('endereco');
+            $table->string('qualidade');
+            $table->boolean('enviado');
+            $table->boolean('status');
+            $table->integer('porta');
+            $table->unsignedBigInteger('cliente_id');
+            $table->foreign('cliente_id')
+                ->references('id')
+                ->on('clientes');
             $table->timestamps();
         });
     }
