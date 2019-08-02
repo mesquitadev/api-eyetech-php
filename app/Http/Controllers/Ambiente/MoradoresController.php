@@ -2,30 +2,32 @@
 
 namespace App\Http\Controllers\Ambiente;
 
+use App\Http\Controllers\ApiMessages;
+use App\Http\Requests\MoradorRequest;
+use App\Http\Resources\MoradorCollection;
+use App\Models\Morador;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
 class MoradoresController extends Controller
 {
+    private $morador;
+
+    public function __construct(Morador $morador)
+    {
+        return $this->morador = $morador;
+    }
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return MoradorCollection
      */
     public function index()
     {
-        //
+        $morador   = $this->morador->all();
+        return new MoradorCollection($morador);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
 
     /**
      * Store a newly created resource in storage.
@@ -33,9 +35,18 @@ class MoradoresController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(MoradorRequest $request)
     {
-        //
+        $data = $request->all();
+        try {
+            $morador = $this->morador->create($data);
+            return response()->json([
+                'data' => 'Morador cadastrado com sucesso!'
+            ], 201);
+        } catch (\Exception $e) {
+            $message = new ApiMessages($e->getMessage());
+            return response()->json($message->getMessage(), 400);
+        }
     }
 
     /**
@@ -46,18 +57,15 @@ class MoradoresController extends Controller
      */
     public function show($id)
     {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
+        try{
+            $morador = $this->morador->findOrFail($id);
+            return response()->json([
+                'data' => $morador
+            ], 201);
+        } catch (\Exception $e) {
+            $message = new ApiMessages($e->getMessage());
+            return response()->json($message->getMessage(), 400);
+        }
     }
 
     /**
@@ -69,7 +77,18 @@ class MoradoresController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $data = $request->all();
+        try{
+            $morador = $this->morador->findOrFail($id);
+            $morador->update($data);
+            return response()->json([
+                'data' => 'Morador atualizado com sucesso!'
+            ], 201);
+
+        } catch (\Exception $e) {
+            $message = new ApiMessages($e->getMessage());
+            return response()->json($message->getMessage(), 400);
+        }
     }
 
     /**
@@ -80,6 +99,16 @@ class MoradoresController extends Controller
      */
     public function destroy($id)
     {
-        //
+        try{
+            $morador = $this->morador->findOrFail($id);
+            $morador->delete();
+            return response()->json([
+                'data' => 'Morador removido com sucesso!'
+            ], 201);
+
+        } catch (\Exception $e) {
+            $message = new ApiMessages($e->getMessage());
+            return response()->json($message->getMessage(), 400);
+        }
     }
 }
