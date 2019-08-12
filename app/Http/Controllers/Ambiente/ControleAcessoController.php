@@ -2,11 +2,27 @@
 
 namespace App\Http\Controllers\Ambiente;
 
+use App\Models\Veiculo;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
 class ControleAcessoController extends Controller
 {
+    private $veiculo;
+    public function __construct(Veiculo $veiculo)
+    {
+        $this->veiculo = $veiculo;
+    }
+
+    /**
+     * Registra a entrada do Veiculo no condomínio
+     * @return void
+     */
+    public function registraEntrada()
+    {
+        //
+    }
+
     /**
      * Display a listing of the resource.
      *

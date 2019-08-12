@@ -20,5 +20,6 @@ Route::group(['prefix' => '/v1'], function(){
    Route::namespace('Ambiente')->group(function(){
        Route::resource('/apartamentos', 'ApartamentosController');
        Route::resource('/cameras', 'CamerasController');
+       Route::resource('/moradores', 'MoradoresController');
    });
 });

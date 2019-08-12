@@ -2,29 +2,30 @@
 
 namespace App\Http\Controllers\Ambiente;
 
+use App\Http\Controllers\ApiMessages;
+use App\Http\Requests\VeiculoRequest;
+use App\Http\Resources\VeiculoCollection;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Models\Veiculo;
 
 class VeiculosController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
+    private $veiculo;
+    public function __construct(Veiculo $veiculo)
     {
-        //
+        $this->veiculo = $veiculo;
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return VeiculoCollection
      */
-    public function create()
+    public function index()
     {
-        //
+        $veiculo = $this->veiculo->all();
+        return new VeiculoCollection($veiculo);
     }
 
     /**
@@ -33,9 +34,18 @@ class VeiculosController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(VeiculoRequest $request)
     {
-        //
+        $data = $request->all();
+        try {
+            $veiculo = $this->veiculo->create($data);
+            return response()->json([
+                'data' => 'Veiculo cadastrado com sucesso!'
+            ], 201);
+        } catch (\Exception $e) {
+            $message = new ApiMessages($e->getMessage());
+            return response()->json($message->getMessage(), 400);
+        }
     }
 
     /**
@@ -46,18 +56,15 @@ class VeiculosController extends Controller
      */
     public function show($id)
     {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
+        try{
+            $veiculo = $this->veiculo->findOrFail($id);
+            return response()->json([
+                'data' => $veiculo
+            ], 201);
+        } catch (\Exception $e) {
+            $message = new ApiMessages($e->getMessage());
+            return response()->json($message->getMessage(), 400);
+        }
     }
 
     /**
@@ -69,7 +76,18 @@ class VeiculosController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $data = $request->all();
+        try{
+            $veiculo = $this->veiculo->findOrFail($id);
+            $veiculo->update($data);
+            return response()->json([
+                'data' => 'Veículo atualizado com sucesso!'
+            ], 201);
+
+        } catch (\Exception $e) {
+            $message = new ApiMessages($e->getMessage());
+            return response()->json($message->getMessage(), 400);
+        }
     }
 
     /**
@@ -80,6 +98,16 @@ class VeiculosController extends Controller
      */
     public function destroy($id)
     {
-        //
+        try{
+            $veiculo = $this->veiculo->findOrFail($id);
+            $veiculo->delete();
+            return response()->json([
+                'data' => 'Veiculo removido com sucesso!'
+            ], 201);
+
+        } catch (\Exception $e) {
+            $message = new ApiMessages($e->getMessage());
+            return response()->json($message->getMessage(), 400);
+        }
     }
 }
